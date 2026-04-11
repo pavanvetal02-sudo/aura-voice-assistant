@@ -32,8 +32,8 @@ const motivationalQuotes = [
 ];
 
 const greetings = [
-  "Hey there! I'm Nova, your AI assistant. How can I brighten your day? ✨",
-  "Hello! Nova here, ready to help! What's on your mind? 😊",
+  "Hey there! I'm Sara, your AI assistant. How can I brighten your day? ✨",
+  "Hello! Sara here, ready to help! What's on your mind? 😊",
   "Hi! Great to hear from you! What can I do for you today? 🌟",
 ];
 
@@ -53,9 +53,15 @@ function processCommand(input: string): { response: string; emotion: Emotion; ac
   const emotion = detectEmotion(input);
 
   // Open websites
-  if (/open\s+(youtube|google|instagram|twitter|facebook|github|reddit|spotify|netflix)/.test(lower)) {
-    const match = lower.match(/open\s+(\w+)/);
-    const site = match?.[1] || "";
+  if (/open\s+(.+)/.test(lower)) {
+    const match = lower.match(/open\s+(.+)/);
+    let site = match?.[1]?.toLowerCase().trim() || "";
+
+    // Specific misspellings mapping
+    if (site.includes("sportify") || site.includes("spotif")) {
+      site = "spotify";
+    }
+
     const urls: Record<string, string> = {
       youtube: "https://www.youtube.com",
       google: "https://www.google.com",
@@ -67,14 +73,20 @@ function processCommand(input: string): { response: string; emotion: Emotion; ac
       spotify: "https://www.spotify.com",
       netflix: "https://www.netflix.com",
     };
-    const url = urls[site];
-    if (url) {
-      return {
-        response: `Opening ${site.charAt(0).toUpperCase() + site.slice(1)} for you! 🌐`,
-        emotion: "happy",
-        action: () => window.open(url, "_blank"),
-      };
+
+    let url = urls[site];
+    let responseText = `Opening ${site.charAt(0).toUpperCase() + site.slice(1)} for you! 🌐`;
+
+    if (!url) {
+      url = `https://www.google.com/search?q=${encodeURIComponent(site)}`;
+      responseText = `I couldn't find an app named ${site}, so I'm running a Google search for you! 🌐`;
     }
+
+    return {
+      response: responseText,
+      emotion: "happy",
+      action: () => window.open(url, "_blank"),
+    };
   }
 
   // Time
@@ -111,7 +123,7 @@ function processCommand(input: string): { response: string; emotion: Emotion; ac
 
   // Name
   if (/what('s| is) your name|who are you/.test(lower)) {
-    return { response: "I'm Nova — your futuristic AI voice assistant! ✨ I'm here to help, chat, and make your day better!", emotion: "happy" };
+    return { response: "I'm Sara — your futuristic AI voice assistant! ✨ I'm here to help, chat, and make your day better!", emotion: "happy" };
   }
 
   // Sad user
