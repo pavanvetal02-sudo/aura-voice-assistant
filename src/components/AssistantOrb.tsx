@@ -24,40 +24,35 @@ const stateAnimations: Record<AssistantState, string> = {
 };
 
 export function AssistantOrb({ state, emotion, onTap }: AssistantOrbProps) {
-  const gradient = emotionGradients[emotion];
-  const animation = stateAnimations[state];
+  const isSpeaking = state === "speaking";
 
   return (
     <button
       onClick={onTap}
-      className="relative group cursor-pointer focus:outline-none"
+      className={`relative group cursor-pointer focus:outline-none transition-transform duration-300 hover:scale-105`}
       aria-label={state === "listening" ? "Stop listening" : "Start listening"}
     >
-      {/* Outer ring */}
-      <div className={`absolute inset-[-16px] rounded-full border-2 border-neon-purple/30 animate-ring-rotate ${state === "listening" ? "border-neon-cyan/60" : ""}`} />
-      <div className={`absolute inset-[-32px] rounded-full border border-neon-blue/15 animate-ring-rotate`} style={{ animationDirection: "reverse", animationDuration: "12s" }} />
+      {/* Background Glow */}
+      <div className={`absolute inset-0 rounded-full bg-neon-purple opacity-20 blur-xl transition-opacity duration-500 ${state !== "idle" ? "opacity-60 bg-neon-cyan" : ""}`} />
 
-      {/* Glow background */}
-      <div className={`absolute inset-[-8px] rounded-full bg-gradient-to-r ${gradient} opacity-20 blur-xl transition-opacity duration-500 ${state !== "idle" ? "opacity-40" : ""}`} />
-
-      {/* Main orb */}
+      {/* Avatar Image container */}
       <div
-        className={`relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-gradient-to-br ${gradient} ${animation} flex items-center justify-center transition-all duration-300`}
+        className={`relative w-40 h-40 sm:w-48 sm:h-48 rounded-full overflow-hidden border-4 ${isSpeaking ? 'border-neon-cyan' : 'border-border/50'} shadow-xl ${isSpeaking ? 'animate-talking' : ''} transition-all duration-300 flex items-center justify-center bg-background`}
       >
-        {/* Inner glass effect */}
-        <div className="absolute inset-2 rounded-full bg-gradient-to-b from-white/20 to-transparent" />
-
-        {/* State indicator */}
-        <div className="relative z-10 flex flex-col items-center gap-1">
-          {state === "idle" && (
-            <svg className="w-10 h-10 text-primary-foreground drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-            </svg>
-          )}
-          {state === "listening" && <WaveAnimation />}
-          {state === "processing" && <ProcessingDots />}
-          {state === "speaking" && <SpeakingWave />}
-        </div>
+        <img 
+          src="/sara.png" 
+          alt="Sara Avatar" 
+          className="w-full h-full object-cover"
+        />
+        
+        {/* Overlay state indicator for non-idle states */}
+        {state !== "idle" && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 bg-black/60 px-3 py-1.5 rounded-full backdrop-blur-sm">
+            {state === "listening" && <WaveAnimation />}
+            {state === "processing" && <ProcessingDots />}
+            {state === "speaking" && <SpeakingWave />}
+          </div>
+        )}
       </div>
 
       {/* Label */}

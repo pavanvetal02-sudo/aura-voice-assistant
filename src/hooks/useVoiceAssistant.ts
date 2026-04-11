@@ -198,9 +198,14 @@ export function useVoiceAssistant() {
     utterance.volume = 1;
 
     const voices = synthRef.current.getVoices();
-    const preferred = voices.find(
-      (v) => v.name.includes("Google") && v.lang.startsWith("en")
-    ) || voices.find((v) => v.lang.startsWith("en"));
+    const isFemale = (v: SpeechSynthesisVoice) => {
+      const lower = v.name.toLowerCase();
+      return lower.includes("female") || lower.includes("zira") || lower.includes("samantha") || lower.includes("victoria");
+    };
+
+    const preferred = voices.find((v) => v.lang.startsWith("en") && isFemale(v)) 
+      || voices.find((v) => v.lang.startsWith("en") && v.name.includes("Google"))
+      || voices.find((v) => v.lang.startsWith("en"));
     if (preferred) utterance.voice = preferred;
 
     utterance.onstart = () => setState("speaking");
