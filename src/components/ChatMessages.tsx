@@ -3,6 +3,7 @@ import { type Message, type Emotion } from "@/hooks/useVoiceAssistant";
 
 interface ChatMessagesProps {
   messages: Message[];
+  onSuggestionClick?: (text: string) => void;
 }
 
 const emotionLabels: Record<Emotion, string> = {
@@ -15,7 +16,7 @@ const emotionLabels: Record<Emotion, string> = {
   funny: "😄",
 };
 
-export function ChatMessages({ messages }: ChatMessagesProps) {
+export function ChatMessages({ messages, onSuggestionClick }: ChatMessagesProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,7 +29,13 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
         <p className="text-sm font-body">Say something like:</p>
         <div className="mt-3 flex flex-wrap gap-2 justify-center max-w-md">
           {['"Hello Nova"', '"Tell me a joke"', '"What time is it?"', '"Open YouTube"', '"I\'m feeling sad"'].map((s) => (
-            <span key={s} className="px-3 py-1.5 rounded-full bg-muted text-xs font-body text-muted-foreground">{s}</span>
+            <button
+              key={s}
+              onClick={() => onSuggestionClick?.(s.replace(/"/g, ''))}
+              className="px-3 py-1.5 rounded-full bg-muted text-xs font-body text-muted-foreground hover:bg-muted/80 transition-colors"
+            >
+              {s}
+            </button>
           ))}
         </div>
       </div>

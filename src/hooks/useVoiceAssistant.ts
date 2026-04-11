@@ -204,6 +204,73 @@ export function useVoiceAssistant() {
     synthRef.current.speak(utterance);
   }, []);
 
+  const sendMessage = useCallback((input: string) => {
+    if (!input.trim()) return;
+    
+    setState("processing");
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      text: input.trim(),
+      timestamp: new Date(),
+    };
+
+    const doBackendFetch = async (inputStr: string) => {
+      try {
+        const res = await fetch("http://localhost:3000/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: inputStr })
+        });
+        
+        if (!res.ok) throw new Error("Backend error");
+        
+        const data = await res.json();
+        const response = data.reply;
+        const emotion: Emotion = "neutral";
+        
+        const assistantMsg: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          text: response,
+          emotion,
+          timestamp: new Date(),
+        };
+
+        setCurrentEmotion(emotion);
+        setMessages((prev) => [...prev, userMsg, assistantMsg]);
+
+        setTimeout(() => {
+          if (data.action === "open_url" && data.url) {
+            window.open(data.url, "_blank");
+          }
+          speak(response);
+        }, 300);
+      } catch (e) {
+        // fallback if backend is down
+        const { response, emotion, action } = processCommand(inputStr);
+        const assistantMsg: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          text: response,
+          emotion,
+          timestamp: new Date(),
+        };
+
+        setCurrentEmotion(emotion);
+        setMessages((prev) => [...prev, userMsg, assistantMsg]);
+
+        setTimeout(() => {
+          action?.();
+          speak(response);
+        }, 300);
+      }
+    };
+
+    synthRef.current.cancel();
+    doBackendFetch(input.trim());
+  }, [speak]);
+
   const startListening = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -245,67 +312,7 @@ export function useVoiceAssistant() {
     recognition.onend = () => {
       setTranscript((current) => {
         if (current.trim()) {
-          setState("processing");
-          const userMsg: Message = {
-            id: Date.now().toString(),
-            role: "user",
-            text: current.trim(),
-            timestamp: new Date(),
-          };
-
-          const doBackendFetch = async (input: string) => {
-            try {
-              const res = await fetch("http://localhost:3000/api/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: input })
-              });
-              
-              if (!res.ok) throw new Error("Backend error");
-              
-              const data = await res.json();
-              const response = data.reply;
-              const emotion: Emotion = "neutral";
-              
-              const assistantMsg: Message = {
-                id: (Date.now() + 1).toString(),
-                role: "assistant",
-                text: response,
-                emotion,
-                timestamp: new Date(),
-              };
-
-              setCurrentEmotion(emotion);
-              setMessages((prev) => [...prev, userMsg, assistantMsg]);
-
-              setTimeout(() => {
-                if (data.action === "open_url" && data.url) {
-                  window.open(data.url, "_blank");
-                }
-                speak(response);
-              }, 300);
-            } catch (e) {
-              // fallback if backend is down
-              const { response, emotion, action } = processCommand(input);
-              const assistantMsg: Message = {
-                id: (Date.now() + 1).toString(),
-                role: "assistant",
-                text: response,
-                emotion,
-                timestamp: new Date(),
-              };
-
-              setCurrentEmotion(emotion);
-              setMessages((prev) => [...prev, userMsg, assistantMsg]);
-
-              setTimeout(() => {
-                action?.();
-                speak(response);
-              }, 300);
-            }
-          };
-
-          doBackendFetch(current.trim());
+          sendMessage(current.trim());
         } else {
           setState("idle");
         }
@@ -339,5 +346,6 @@ export function useVoiceAssistant() {
     startListening,
     stopListening,
     stopSpeaking,
+    sendMessage,
   };
 }

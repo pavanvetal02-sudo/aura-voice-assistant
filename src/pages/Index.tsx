@@ -1,9 +1,12 @@
+import { useState } from "react";
+import { Send } from "lucide-react";
 import { AssistantOrb } from "@/components/AssistantOrb";
 import { ChatMessages } from "@/components/ChatMessages";
 import { ParticleBackground } from "@/components/ParticleBackground";
 import { useVoiceAssistant } from "@/hooks/useVoiceAssistant";
 
 const Index = () => {
+  const [inputValue, setInputValue] = useState("");
   const {
     state,
     messages,
@@ -12,6 +15,7 @@ const Index = () => {
     startListening,
     stopListening,
     stopSpeaking,
+    sendMessage,
   } = useVoiceAssistant();
 
   const handleOrbTap = () => {
@@ -56,8 +60,35 @@ const Index = () => {
 
       {/* Chat section */}
       <section className="relative z-10 w-full max-w-lg px-4 pb-8">
-        <div className="rounded-2xl bg-card/60 backdrop-blur-md border border-border p-4">
-          <ChatMessages messages={messages} />
+        <div className="rounded-2xl bg-card/60 backdrop-blur-md border border-border p-4 flex flex-col gap-4">
+          <ChatMessages messages={messages} onSuggestionClick={sendMessage} />
+          
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (inputValue.trim() && state !== "processing") {
+                sendMessage(inputValue.trim());
+                setInputValue("");
+              }
+            }}
+            className="flex items-center gap-2 relative animate-fade-in"
+          >
+            <input 
+              type="text" 
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Or type a message here..."
+              disabled={state === "processing"}
+              className="flex-1 bg-background/50 border border-border rounded-full px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary transition-colors disabled:opacity-50"
+            />
+            <button 
+              type="submit"
+              disabled={!inputValue.trim() || state === "processing"}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground p-2.5 rounded-full transition-transform active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center"
+            >
+              <Send size={18} />
+            </button>
+          </form>
         </div>
       </section>
     </div>
