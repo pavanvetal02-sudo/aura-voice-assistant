@@ -169,7 +169,7 @@ function processCommand(input: string): { response: string; emotion: Emotion; ac
 
   // Default
   return {
-    response: `I heard you say: "${input}". I'm still learning, but I'm here to help! Try asking me the time, a joke, or to open a website! 🤖`,
+    response: `Yes Pavan sir, I heard you say: "${input}". My AI brain is currently low on energy (API Quota), but I'm here to help! Try asking me the time, a joke, or to open a website! 🤖`,
     emotion: "neutral",
   };
 }
