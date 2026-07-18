@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Send, Settings } from "lucide-react";
 import { AssistantOrb } from "@/components/AssistantOrb";
 import { ChatMessages } from "@/components/ChatMessages";
 import { ParticleBackground } from "@/components/ParticleBackground";
@@ -32,8 +33,17 @@ const Index = () => {
     <div className="relative min-h-screen flex flex-col items-center justify-between overflow-hidden">
       <ParticleBackground />
 
-      {/* Header */}
-      <header className="relative z-10 pt-8 sm:pt-12 text-center animate-fade-in">
+      <header className="relative z-10 pt-8 sm:pt-12 text-center animate-fade-in w-full px-4">
+        <div className="absolute right-4 top-8 sm:top-12">
+          <Link
+            to="/settings"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            title="Settings"
+          >
+            <Settings size={16} />
+            Settings
+          </Link>
+        </div>
         <h1 className="text-3xl sm:text-4xl font-heading font-bold tracking-wider text-glow-primary">
           <span className="bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink bg-clip-text text-transparent">
             AURA
