@@ -28,7 +28,7 @@ export function ChatMessages({ messages, onSuggestionClick }: ChatMessagesProps)
       <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground animate-fade-in">
         <p className="text-sm font-body">Say something like:</p>
         <div className="mt-3 flex flex-wrap gap-2 justify-center max-w-md">
-          {['"Hello Sara"', '"Tell me a joke"', '"What time is it?"', '"Open YouTube"', '"I\'m feeling sad"'].map((s) => (
+          {['"Hello Aura"', '"What time is it?"', '"Open YouTube"', '"Open VS Code"', '"Volume to 50"'].map((s) => (
             <button
               key={s}
               onClick={() => onSuggestionClick?.(s.replace(/"/g, ''))}

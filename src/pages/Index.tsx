@@ -36,11 +36,11 @@ const Index = () => {
       <header className="relative z-10 pt-8 sm:pt-12 text-center animate-fade-in">
         <h1 className="text-3xl sm:text-4xl font-heading font-bold tracking-wider text-glow-primary">
           <span className="bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink bg-clip-text text-transparent">
-            SARA
+            AURA
           </span>
         </h1>
         <p className="mt-2 text-sm text-muted-foreground font-body tracking-wide">
-          Your Intelligent Voice Assistant
+          Your Local OS Assistant — Jarvis Edition
         </p>
       </header>
 

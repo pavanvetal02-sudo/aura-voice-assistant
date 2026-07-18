@@ -41,7 +41,7 @@ export function AssistantOrb({ state, emotion, onTap }: AssistantOrbProps) {
       >
         <img 
           src="/sara.png" 
-          alt="Sara Avatar" 
+          alt="Aura Avatar" 
           className="w-full h-full object-cover"
         />
         
